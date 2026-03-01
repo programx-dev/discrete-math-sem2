@@ -58,10 +58,8 @@ def cli_input() -> tuple[Vector, list[Vector]]:
     Сбор данных от пользователя через терминал.
     """
     print("\n--- Ввод данных ---")
-    print("Введите коэффициенты через пробел, начиная с x^0 (например: 1 0.5 -1/3)")
-
     try:
-        f_raw = parse_coeff_string(input("Коэффициенты f(x): "))
+        f_raw = parse_coeff_string(input("Коэффициенты f(x) (x^0 x^1 ...): "))
 
         k_input = input("Количество порождающих многочленов g_i: ")
         k = int(k_input)
@@ -86,32 +84,33 @@ def main():
 
     try:
         f, g = cli_input()
+
+        # Интерпретация ввода
+        print("\n--- Ваши многочлены ---")
+        print(f"f(x) = {Polynomial(f)}")
+        for i, vec in enumerate(g):
+            print(f"g_{i + 1}(x) = {Polynomial(vec)}")
+
+        # Формируем матрицу системы
+        matrix_system = Matrix.from_columns(g).augment(f)
+
+        print("\n--- Расширенная матрица системы [G | f] ---")
+        print(matrix_system)
+
+        # Решаем систему
+        solution = Solver.solve(matrix_system)
+
+        # Выводим результат
+        print("\n--- Результат решения СЛАУ ---")
+        print(solution)
+
+        print("\n--- Итоговое представление ---")
+        print(format_final_answer(solution))
+        print("============================================================\n")
+
     except (MatrixError, ValueError) as e:
         print(f"\nКритическая ошибка: {e}")
         sys.exit(1)
-
-    # Интерпретация ввода
-    print("\n--- Ваши многочлены ---")
-    print(f"f(x) = {Polynomial(f)}")
-    for i, vec in enumerate(g):
-        print(f"g_{i + 1}(x) = {Polynomial(vec)}")
-
-    # Формируем матрицу системы
-    matrix_system = Matrix.from_columns(g).augment(f)
-
-    print("\n--- Расширенная матрица системы [G | f] ---")
-    print(matrix_system)
-
-    # Решаем систему
-    solution = Solver.solve(matrix_system)
-
-    # Выводим результат
-    print("\n--- Результат решения СЛАУ ---")
-    print(solution)
-
-    print("\n--- Итоговое представление ---")
-    print(format_final_answer(solution))
-    print("============================================================\n")
 
 
 if __name__ == "__main__":
