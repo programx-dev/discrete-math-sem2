@@ -5,21 +5,33 @@ from fractions import Fraction
 from lab_01.math_engine.matrix import Vector
 
 
-def parse_coeff_string(input_str: str) -> Vector:
+def strip_trailing_zeros(coeffs: list[Fraction]) -> list[Fraction]:
     """
-    Преобразует строку коэффициентов в список Fraction.
-    Пример: "1 0.5 -1/3" -> [Fraction(1, 1), Fraction(1, 2), Fraction(-1, 3)].
+    Удаляет незначащие нули в конце списка (старшие степени).
+    """
+    # Идем с конца и ищем первый ненулевой элемент
+    while len(coeffs) > 1 and coeffs[-1] == 0:
+        coeffs.pop()
+    return coeffs
+
+def parse_coeff_string(input_str: str) -> list[Fraction]:
+    """
+    Преобразует строку коэффициентов в список Fraction без лишних нулей.
     """
     tokens = input_str.strip().split()
+
+    if not tokens:
+        return []
 
     coeffs = []
     for t in tokens:
         try:
             coeffs.append(Fraction(t))
         except ValueError:
-            raise ValueError(f"Ошибка: '{t}' не является валидным числом или дробью.")
-
-    return coeffs
+            raise ValueError(f"Ошибка: '{t}' не является числом.")
+    
+    # Чистим вектор от лишних нулей в конце
+    return strip_trailing_zeros(coeffs)
 
 
 def align_polynomials(all_coeffs: list[Vector]) -> list[Vector]:
@@ -27,7 +39,7 @@ def align_polynomials(all_coeffs: list[Vector]) -> list[Vector]:
     Дополнить незначащями нулями векторы коэффицентов до одинаковой размерности.
     """
     if not all_coeffs:
-        return []
+        raise ValueError("Ввод не может быть пустым. Введите хотя бы один коэффициент.")
 
     # Находим максимальную степень
     max_len = max(len(c) for c in all_coeffs)
