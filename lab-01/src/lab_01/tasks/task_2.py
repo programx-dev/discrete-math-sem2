@@ -6,6 +6,11 @@ from lab_01.math_engine.matrix import Matrix, MatrixError, Vector
 from lab_01.math_engine.solver import Solver, Solution
 from lab_01.polynomials.model import Polynomial
 from lab_01.polynomials.parser import parse_coeff_string
+from lab_01.polynomials.binomial import get_col
+
+# Это не самый эффективный метод решения, зато он переиспользует подход из task_1[]
+# Есть методы получше: метод замены перемнной, в таком случае выводится формулы для коэфф.,
+# либо решение через деление многочленов, например методом Горнера.
 
 
 def format_binomial_decomposition(solution: Solution, a: Fraction) -> str:
@@ -50,31 +55,9 @@ def format_binomial_decomposition(solution: Solution, a: Fraction) -> str:
     return "f(x) = " + "".join(parts) if parts else "f(x) = 0"
 
 
-def generate_binomial_coeffs(power_k: int, a: Fraction):
-    """
-    Генератор коэффициентов (x - a)^k от старшей степени к младшей.
-    """
-    current_coeff = Fraction(1)
-    for deg in range(power_k, -1, -1):
-        yield current_coeff
-        current_coeff = current_coeff * (-a) * deg / (power_k - deg + 1)
-
-
-def get_col(power_k: int, a: Fraction, max_degree_n: int) -> Vector:
-    """
-    Формирует вектор-столбец для матрицы системы.
-    """
-    vector = [Fraction(0)] * (max_degree_n + 1)
-
-    for i, val in enumerate(generate_binomial_coeffs(power_k, a)):
-        vector[power_k - i] = val
-
-    return vector
-
-
 def create_matrix(f_vector: Vector, a: Fraction) -> Matrix:
     """
-    Создает расширенную матрицу системы для разложения по (x-a)^k.
+    Создает расширенную матрицу системы для разложения по (x - a)^k.
     """
 
     max_deg = len(f_vector) - 1
