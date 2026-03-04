@@ -69,6 +69,43 @@ class Matrix:
 
         self._data[r][c] = value
 
+    def _check_consistency(self, other_rows: int):
+        if self.cols != other_rows:
+            raise MatrixError(f"Несогласованные размеры: {self.cols} != {other_rows}")
+
+    def __matmul__(self, other: Union["Matrix", list[Vector], Vector]) -> "Matrix":
+        """
+        Матричное умножение (A @ B).
+        """
+        if isinstance(other, Matrix):
+            other_mat = other
+        elif isinstance(other, list):
+            if not other:
+                raise MatrixError("Пустая коллекция.")
+            
+            if isinstance(other[0], Fraction):
+                other_mat = Matrix.from_columns([cast(Vector, other)])
+            else:
+                other_mat = Matrix.from_columns(cast(list[Vector], other))
+        else:
+            raise MatrixError("Неподдерживаемый тип аргумента.")
+
+        self._check_consistency(other_mat.rows)
+
+        other_T_data = Matrix._transpose(other_mat.data)
+
+        new_data = [
+            [
+                sum((a * b for a, b in zip(row_self, row_other_T)), start=Fraction(0))
+                for row_other_T in other_T_data
+            ]
+            for row_self in self._data
+        ]
+
+        return Matrix(new_data)
+        
+            
+
     def cross_row(self, row: int) -> "Matrix":
         """
         Вычеркнуть строку. Создается новая матрица.
