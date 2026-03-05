@@ -9,10 +9,11 @@ def strip_trailing_zeros(coeffs: list[Fraction]) -> list[Fraction]:
     """
     Удаляет незначащие нули в конце списка (старшие степени).
     """
-    # Идем с конца и ищем первый ненулевой элемент
     while len(coeffs) > 1 and coeffs[-1] == 0:
         coeffs.pop()
+
     return coeffs
+
 
 def parse_coeff_string(input_str: str) -> list[Fraction]:
     """
@@ -29,7 +30,7 @@ def parse_coeff_string(input_str: str) -> list[Fraction]:
             coeffs.append(Fraction(t))
         except ValueError:
             raise ValueError(f"Ошибка: '{t}' не является числом.")
-    
+
     # Чистим вектор от лишних нулей в конце
     return strip_trailing_zeros(coeffs)
 
