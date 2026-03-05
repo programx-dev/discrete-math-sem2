@@ -4,7 +4,7 @@ import sys
 from fractions import Fraction
 from lab_01.math_engine.matrix import Matrix, MatrixError
 from lab_01.polynomials.parser import parse_coeff_string
-from lab_01.tasks.task_2 import format_binomial_decomposition
+from lab_01.tasks.part_1.task_2 import format_binomial_decomposition
 from lab_01.polynomials.binomial import get_col
 
 
